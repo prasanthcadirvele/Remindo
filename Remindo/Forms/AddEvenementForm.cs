@@ -33,6 +33,13 @@ namespace Remindo.Forms
             DateTime dateFin = dateTimePicker3.Value;
             string description = textBox2.Text;
 
+            // Check if any of the fields are empty
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                MessageBox.Show("Veuillez remplir tous les champs.");
+                return; // Exit the method without adding the event
+            }
+
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))

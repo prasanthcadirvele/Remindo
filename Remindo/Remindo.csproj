@@ -108,6 +108,12 @@
     <Compile Include="Forms\AddEvenementForm.Designer.cs">
       <DependentUpon>AddEvenementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AddNoteForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddNoteForm.Designer.cs">
+      <DependentUpon>AddNoteForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormRegister.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,6 +137,9 @@
     <Compile Include="Repositories\UserManager.cs" />
     <EmbeddedResource Include="Forms\AddEvenementForm.resx">
       <DependentUpon>AddEvenementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AddNoteForm.resx">
+      <DependentUpon>AddNoteForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormRegister.resx">
       <DependentUpon>FormRegister.cs</DependentUpon>
