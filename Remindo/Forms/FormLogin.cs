@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using Remindo.Class;
 using Remindo.Forms;
+using Remindo.Repositories;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,13 +16,16 @@ namespace Remindo
 {
     public partial class FormLogin : Form
     {
-        // MySQL connection string
-        private string connectionString = "server=localhost;database=Remindo;uid=root";
+        private UserManager userManager;
 
         public FormLogin()
         {
             InitializeComponent();
+            // Initialize the UserManager with the connection string
+            string connectionString = "server=localhost;database=Remindo;uid=root;";
+            userManager = new UserManager(connectionString);
         }
+
         private void label5_Click(object sender, EventArgs e)
         {
 
@@ -47,14 +51,21 @@ namespace Remindo
 
             try
             {
-                User user = new User(email, password);
-                user.Login();
+                // Authenticate the user
+                var (isAuthenticated, utilisateurId) = userManager.AuthenticateUser(email, password);
 
-                // If login successful, redirect to home page
-                MessageBox.Show("Login successful");
-                Home home = new Home();
-                home.Show();
-                this.Hide();
+                if (isAuthenticated)
+                {
+                    // If login successful, redirect to home page
+                    MessageBox.Show("Login successful");
+                    Home home = new Home(utilisateurId);
+                    home.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("Invalid email or password");
+                }
             }
             catch (Exception ex)
             {

@@ -36,9 +36,9 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.button5 = new System.Windows.Forms.Button();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ElementID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Catégorie = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Actions = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -99,9 +99,9 @@
             this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3});
+            this.ElementID,
+            this.Catégorie,
+            this.Actions});
             this.dataGridView1.Location = new System.Drawing.Point(0, 127);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
@@ -126,26 +126,26 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // Column1
+            // ElementID
             // 
-            this.Column1.HeaderText = "Element ID";
-            this.Column1.MinimumWidth = 6;
-            this.Column1.Name = "Column1";
-            this.Column1.Width = 237;
+            this.ElementID.HeaderText = "Element ID";
+            this.ElementID.MinimumWidth = 6;
+            this.ElementID.Name = "ElementID";
+            this.ElementID.Width = 237;
             // 
-            // Column2
+            // Catégorie
             // 
-            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column2.HeaderText = "Catégorie";
-            this.Column2.MinimumWidth = 6;
-            this.Column2.Name = "Column2";
+            this.Catégorie.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Catégorie.HeaderText = "Catégorie";
+            this.Catégorie.MinimumWidth = 6;
+            this.Catégorie.Name = "Catégorie";
             // 
-            // Column3
+            // Actions
             // 
-            this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column3.HeaderText = "Actions";
-            this.Column3.MinimumWidth = 6;
-            this.Column3.Name = "Column3";
+            this.Actions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Actions.HeaderText = "Actions";
+            this.Actions.MinimumWidth = 6;
+            this.Actions.Name = "Actions";
             // 
             // Home
             // 
@@ -176,8 +176,8 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ElementID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Catégorie;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Actions;
     }
 }

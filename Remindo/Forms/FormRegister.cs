@@ -10,18 +10,18 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
 
-
 namespace Remindo
 {
     public partial class FormRegister : Form
     {
         // MySQL connection string
-        private string connectionString = "server=localhost;database=Remindo;uid=root";
+        private readonly string connectionString = "server=localhost;database=Remindo;uid=root";
+
         public FormRegister()
         {
             InitializeComponent();
         }
-        // Event handler for the Register button click
+
         private void btnRegister_Click(object sender, EventArgs e)
         {
             string email = txtEmail.Text;
@@ -38,18 +38,42 @@ namespace Remindo
             // Hash the password for security before storing it in the database
             string hashedPassword = HashPassword(password);
 
-            // Insert the user's email and hashed password into the database
+            // Check if the email already exists in the database
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                string query = "INSERT INTO Utilisateur (email, motdepasse) VALUES (@Email, @Password)";
-                MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Email", email);
-                command.Parameters.AddWithValue("@Password", hashedPassword);
+                string checkEmailQuery = "SELECT COUNT(*) FROM Utilisateur WHERE email = @Email";
+                MySqlCommand checkEmailCommand = new MySqlCommand(checkEmailQuery, connection);
+                checkEmailCommand.Parameters.AddWithValue("@Email", email);
 
                 try
                 {
                     connection.Open();
-                    int rowsAffected = command.ExecuteNonQuery();
+                    int emailCount = Convert.ToInt32(checkEmailCommand.ExecuteScalar());
+                    if (emailCount > 0)
+                    {
+                        MessageBox.Show("Email already exists. Please use a different email.");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error checking email: " + ex.Message);
+                    return;
+                }
+            }
+
+            // Insert the user's email and hashed password into the database
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                string insertUserQuery = "INSERT INTO Utilisateur (email, motdepasse) VALUES (@Email, @Password)";
+                MySqlCommand insertUserCommand = new MySqlCommand(insertUserQuery, connection);
+                insertUserCommand.Parameters.AddWithValue("@Email", email);
+                insertUserCommand.Parameters.AddWithValue("@Password", hashedPassword);
+
+                try
+                {
+                    connection.Open();
+                    int rowsAffected = insertUserCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Registration successful!");
@@ -65,12 +89,11 @@ namespace Remindo
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error: " + ex.Message);
+                    MessageBox.Show("Error registering user: " + ex.Message);
                 }
             }
         }
 
-        // Event handler for the Clear button click
         private void btnClear_Click(object sender, EventArgs e)
         {
             // Clear all textboxes
@@ -79,7 +102,6 @@ namespace Remindo
             textConfirmPassword.Clear();
         }
 
-        // Event handler for the Label6 (Redirect to Login Form) click
         private void label6_Click(object sender, EventArgs e)
         {
             // Redirect to the Login form
@@ -88,7 +110,6 @@ namespace Remindo
             this.Hide();
         }
 
-        // Method to hash the password using SHA256 algorithm
         private string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())

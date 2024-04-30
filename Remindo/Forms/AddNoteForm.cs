@@ -14,11 +14,12 @@ namespace Remindo.Forms
     public partial class AddNoteForm : Form
     {
         private readonly string connectionString = "server=localhost;database=Remindo;uid=root;";
-        private object titre;
+        private readonly int utilisateurId; // Store the logged-in user's utilisateurId
 
-        public AddNoteForm()
+        public AddNoteForm(int utilisateurId)
         {
             InitializeComponent();
+            this.utilisateurId = utilisateurId; // Assign the logged-in user's utilisateurId
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,18 +42,20 @@ namespace Remindo.Forms
                     connection.Open();
 
                     // Insert new note
-                    string noteQuery = "INSERT INTO Note (contenu, dateCreation) VALUES (@Contenu, @DateCreation)";
+                    string noteQuery = "INSERT INTO Note (utilisateurId, contenu, dateCreation) VALUES (@UtilisateurId, @Contenu, @DateCreation)";
                     using (MySqlCommand noteCommand = new MySqlCommand(noteQuery, connection))
                     {
+                        noteCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
                         noteCommand.Parameters.AddWithValue("@Contenu", contenu);
                         noteCommand.Parameters.AddWithValue("@DateCreation", dateCreation);
                         noteCommand.ExecuteNonQuery();
                     }
 
                     // Insert into Element table with title "Note"
-                    string elementQuery = "INSERT INTO Element (titre) VALUES (@Titre)";
+                    string elementQuery = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre)";
                     using (MySqlCommand elementCommand = new MySqlCommand(elementQuery, connection))
                     {
+                        elementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
                         elementCommand.Parameters.AddWithValue("@Titre", "Note");
                         elementCommand.ExecuteNonQuery();
                     }
@@ -77,4 +80,3 @@ namespace Remindo.Forms
         }
     }
 }
-

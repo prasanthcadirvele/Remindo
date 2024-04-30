@@ -45,3 +45,5 @@ C:\Users\Lenovo\source\repos\Remindo\Remindo\obj\Debug\Remindo.pdb
 C:\Users\Lenovo\source\repos\Remindo\Remindo\obj\Debug\Remindo.Forms.Home.resources
 C:\Users\Lenovo\source\repos\Remindo\Remindo\obj\Debug\Remindo.Forms.AddEvenementForm.resources
 C:\Users\Lenovo\source\repos\Remindo\Remindo\obj\Debug\Remindo.Forms.AddNoteForm.resources
+C:\Users\Lenovo\source\repos\Remindo\Remindo\obj\Debug\Remindo.Forms.AddRappelForm.resources
+C:\Users\Lenovo\source\repos\Remindo\Remindo\obj\Debug\Remindo.Forms.AddTacheForm.resources
