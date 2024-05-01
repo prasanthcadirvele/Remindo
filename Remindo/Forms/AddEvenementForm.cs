@@ -43,26 +43,28 @@ namespace Remindo.Forms
                     // Open connection
                     connection.Open();
 
-                    // Insert new evenement
-                    string query = "INSERT INTO Evenement (utilisateurId, titre, dateDebut, dateFin, description) " +
-                                   "VALUES (@UtilisateurId, @Titre, @DateDebut, @DateFin, @Description)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    // Insert into Element table to get elementId
+                    string elementQuery = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre); SELECT LAST_INSERT_ID();";
+                    int elementId;
+                    using (MySqlCommand elementCommand = new MySqlCommand(elementQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        command.Parameters.AddWithValue("@Titre", titre);
-                        command.Parameters.AddWithValue("@DateDebut", dateDebut);
-                        command.Parameters.AddWithValue("@DateFin", dateFin);
-                        command.Parameters.AddWithValue("@Description", description);
-                        command.ExecuteNonQuery();
+                        elementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        elementCommand.Parameters.AddWithValue("@Titre", titre);
+                        elementId = Convert.ToInt32(elementCommand.ExecuteScalar());
                     }
 
-                    // Insert into Element table
-                    query = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    // Insert new evenement with the obtained elementId
+                    string evenementQuery = "INSERT INTO Evenement (elementId, utilisateurId, titre, dateDebut, dateFin, description) " +
+                                           "VALUES (@ElementId, @UtilisateurId, @Titre, @DateDebut, @DateFin, @Description)";
+                    using (MySqlCommand evenementCommand = new MySqlCommand(evenementQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        command.Parameters.AddWithValue("@Titre", titre);
-                        command.ExecuteNonQuery();
+                        evenementCommand.Parameters.AddWithValue("@ElementId", elementId); // Use the obtained elementId
+                        evenementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        evenementCommand.Parameters.AddWithValue("@Titre", titre);
+                        evenementCommand.Parameters.AddWithValue("@DateDebut", dateDebut);
+                        evenementCommand.Parameters.AddWithValue("@DateFin", dateFin);
+                        evenementCommand.Parameters.AddWithValue("@Description", description);
+                        evenementCommand.ExecuteNonQuery();
                     }
 
                     MessageBox.Show("Evenement ajouté avec succès !");
@@ -73,6 +75,7 @@ namespace Remindo.Forms
                 MessageBox.Show("Erreur: " + ex.Message);
             }
         }
+
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {

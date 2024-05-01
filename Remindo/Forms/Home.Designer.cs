@@ -38,7 +38,8 @@
             this.button5 = new System.Windows.Forms.Button();
             this.ElementID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Catégorie = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Actions = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ActionView = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.ActionDelete = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -101,12 +102,13 @@
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ElementID,
             this.Catégorie,
-            this.Actions});
+            this.ActionView,
+            this.ActionDelete});
             this.dataGridView1.Location = new System.Drawing.Point(0, 127);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(802, 311);
+            this.dataGridView1.Size = new System.Drawing.Size(800, 311);
             this.dataGridView1.TabIndex = 4;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick_1);
             // 
@@ -140,12 +142,19 @@
             this.Catégorie.MinimumWidth = 6;
             this.Catégorie.Name = "Catégorie";
             // 
-            // Actions
+            // ActionView
             // 
-            this.Actions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Actions.HeaderText = "Actions";
-            this.Actions.MinimumWidth = 6;
-            this.Actions.Name = "Actions";
+            this.ActionView.HeaderText = "View";
+            this.ActionView.MinimumWidth = 6;
+            this.ActionView.Name = "ActionView";
+            this.ActionView.Width = 125;
+            // 
+            // ActionDelete
+            // 
+            this.ActionDelete.HeaderText = "Delete";
+            this.ActionDelete.MinimumWidth = 6;
+            this.ActionDelete.Name = "ActionDelete";
+            this.ActionDelete.Width = 125;
             // 
             // Home
             // 
@@ -178,6 +187,7 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.DataGridViewTextBoxColumn ElementID;
         private System.Windows.Forms.DataGridViewTextBoxColumn Catégorie;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Actions;
+        private System.Windows.Forms.DataGridViewButtonColumn ActionView;
+        private System.Windows.Forms.DataGridViewButtonColumn ActionDelete;
     }
 }

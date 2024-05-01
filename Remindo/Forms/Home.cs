@@ -16,7 +16,6 @@ namespace Remindo.Forms
     {
         private readonly string connectionString = "server=localhost;database=Remindo;uid=root;";
         private readonly int utilisateurId;
-
         public Home(int utilisateurId)
         {
             InitializeComponent();
@@ -25,37 +24,32 @@ namespace Remindo.Forms
 
         private void Home_Load(object sender, EventArgs e)
         {
-            LoadDataGridViewData(utilisateurId);
+            LoadDataGridView1Data(utilisateurId);
         }
 
         private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex == dataGridView1.Columns["Actions"].Index)
+            if (e.RowIndex >= 0)
             {
-                int elementId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ElementID"].Value);
-
-                if (dataGridView1.Columns[e.ColumnIndex] is DataGridViewButtonColumn)
+                // Check if the clicked cell is in the "ActionView" column
+                if (e.ColumnIndex == dataGridView1.Columns["ActionView"].Index)
                 {
-                    string buttonName = dataGridView1.Columns[e.ColumnIndex].Name;
-
-                    if (buttonName == "View")
-                    {
-                        // Open window to view details of the element with ID elementId
-                        ViewElementDetails(elementId);
-                    }
-                    else if (buttonName == "Delete")
-                    {
-                        // Remove row from DataGridView
-                        dataGridView1.Rows.RemoveAt(e.RowIndex);
-
-                        // Delete corresponding record from the database
-                        DeleteElementFromDatabase(elementId);
-                    }
+                    // Handle the view action
+                    int elementId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ElementID"].Value);
+                    ViewElementDetails(elementId);
+                }
+                // Check if the clicked cell is in the "ActionDelete" column
+                else if (e.ColumnIndex == dataGridView1.Columns["ActionDelete"].Index)
+                {
+                    // Handle the delete action
+                    int elementId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ElementID"].Value);
+                    DeleteElement(elementId);
+                    dataGridView1.Rows.RemoveAt(e.RowIndex);
                 }
             }
         }
 
-        private void LoadDataGridViewData(int utilisateurId)
+        private void LoadDataGridView1Data(int utilisateurId)
         {
             try
             {
@@ -78,14 +72,15 @@ namespace Remindo.Forms
                                 row.Cells[0].Value = reader["elementId"];
                                 row.Cells[1].Value = reader["titre"];
 
-                                // Add buttons to the "Actions" column for each row
+                                // Add buttons to the "ActionView" column for each row
                                 DataGridViewButtonCell viewButtonCell = new DataGridViewButtonCell();
                                 viewButtonCell.Value = "View";
                                 row.Cells[2] = viewButtonCell;
 
+                                // Add buttons to the "ActionDelete" column for each row
                                 DataGridViewButtonCell deleteButtonCell = new DataGridViewButtonCell();
                                 deleteButtonCell.Value = "Delete";
-                                row.Cells[2] = deleteButtonCell;
+                                row.Cells[3] = deleteButtonCell;
 
                                 // Add the row to the DataGridView
                                 dataGridView1.Rows.Add(row);
@@ -100,14 +95,8 @@ namespace Remindo.Forms
             }
         }
 
-        private void ViewElementDetails(int elementId)
-        {
-            // Open window to view details of the element with ID elementId
-            // Implement this method to open a new window and display details of the element
-            MessageBox.Show($"View button clicked for Element ID: {elementId}");
-        }
 
-        private void DeleteElementFromDatabase(int elementId)
+        private void ViewElementDetails(int elementId)
         {
             try
             {
@@ -115,20 +104,147 @@ namespace Remindo.Forms
                 {
                     connection.Open();
 
-                    // Delete record from database based on elementId
-                    string query = "DELETE FROM Element WHERE elementId = @ElementId";
+                    // Determine the type of element based on the row data
+                    string query = "SELECT type FROM Element WHERE elementId = @ElementId";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@ElementId", elementId);
-                        command.ExecuteNonQuery();
-                    }
+                        string elementType = command.ExecuteScalar().ToString();
 
-                    // Optionally, delete from other tables as needed
+                        // Open the corresponding AddForm
+                        Form addForm = null;
+                        switch (elementType)
+                        {
+                            case "Evenement":
+                                addForm = new AddEvenementForm(elementId);
+                                break;
+                            case "Note":
+                                addForm = new AddNoteForm(elementId);
+                                break;
+                            case "Rappel":
+                                addForm = new AddRappelForm(elementId);
+                                break;
+                            case "Tache":
+                                addForm = new AddTacheForm(elementId);
+                                break;
+                            default:
+                                MessageBox.Show("Unknown element type.");
+                                return;
+                        }
+
+                        // Pass the element ID to the AddForm
+                        addForm.Tag = elementId;
+
+                        // Disable editing in the AddForm
+                        foreach (Control control in addForm.Controls)
+                        {
+                            if (control is TextBox)
+                            {
+                                ((TextBox)control).ReadOnly = true;
+                            }
+                            // Add similar handling for other controls like DateTimePicker, ComboBox, etc.
+                        }
+
+                        // Show the AddForm
+                        addForm.ShowDialog();
+                    }
                 }
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void DeleteElement(int elementId)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Determine the type of element based on the row data
+                    string query = "SELECT type FROM Element WHERE elementId = @ElementId";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ElementId", elementId);
+                        string elementType = command.ExecuteScalar().ToString();
+
+                        // Delete the record from the appropriate table based on the element type
+                        switch (elementType)
+                        {
+                            case "Evenement":
+                                DeleteFromEvenementTable(elementId, connection);
+                                break;
+                            case "Note":
+                                DeleteFromNoteTable(elementId, connection);
+                                break;
+                            case "Rappel":
+                                DeleteFromRappelTable(elementId, connection);
+                                break;
+                            case "Tache":
+                                DeleteFromTacheTable(elementId, connection);
+                                break;
+                            default:
+                                MessageBox.Show("Unknown element type.");
+                                return;
+                        }
+
+                        // Delete the record from the Element table
+                        query = "DELETE FROM Element WHERE elementId = @ElementId";
+                        command.CommandText = query;
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void DeleteFromEvenementTable(int elementId, MySqlConnection connection)
+        {
+            // Delete record from the Evenement table based on elementId
+            string query = "DELETE FROM Evenement WHERE elementId = @ElementId";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@ElementId", elementId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private void DeleteFromNoteTable(int elementId, MySqlConnection connection)
+        {
+            // Delete record from the Note table based on elementId
+            string query = "DELETE FROM Note WHERE elementId = @ElementId";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@ElementId", elementId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private void DeleteFromRappelTable(int elementId, MySqlConnection connection)
+        {
+            // Delete record from the Rappel table based on elementId
+            string query = "DELETE FROM Rappel WHERE elementId = @ElementId";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@ElementId", elementId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private void DeleteFromTacheTable(int elementId, MySqlConnection connection)
+        {
+            // Delete record from the Tache table based on elementId
+            string query = "DELETE FROM Tache WHERE elementId = @ElementId";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@ElementId", elementId);
+                command.ExecuteNonQuery();
             }
         }
 

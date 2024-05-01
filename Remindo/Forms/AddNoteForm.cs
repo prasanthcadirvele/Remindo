@@ -41,23 +41,26 @@ namespace Remindo.Forms
                     // Open connection
                     connection.Open();
 
-                    // Insert new note
-                    string noteQuery = "INSERT INTO Note (utilisateurId, contenu, dateCreation) VALUES (@UtilisateurId, @Contenu, @DateCreation)";
+                    // Insert into Element table to get elementId
+                    string elementQuery = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre); SELECT LAST_INSERT_ID();";
+                    int elementId;
+                    using (MySqlCommand elementCommand = new MySqlCommand(elementQuery, connection))
+                    {
+                        elementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        elementCommand.Parameters.AddWithValue("@Titre", "Note"); // Specify the titre for Note
+                        elementId = Convert.ToInt32(elementCommand.ExecuteScalar());
+                    }
+
+                    // Insert into Note table with the obtained elementId
+                    string noteQuery = "INSERT INTO Note (elementId, utilisateurId, contenu, dateCreation) " +
+                                       "VALUES (@ElementId, @UtilisateurId, @Contenu, @DateCreation)";
                     using (MySqlCommand noteCommand = new MySqlCommand(noteQuery, connection))
                     {
+                        noteCommand.Parameters.AddWithValue("@ElementId", elementId); // Use the obtained elementId
                         noteCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
                         noteCommand.Parameters.AddWithValue("@Contenu", contenu);
                         noteCommand.Parameters.AddWithValue("@DateCreation", dateCreation);
                         noteCommand.ExecuteNonQuery();
-                    }
-
-                    // Insert into Element table with title "Note"
-                    string elementQuery = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre)";
-                    using (MySqlCommand elementCommand = new MySqlCommand(elementQuery, connection))
-                    {
-                        elementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        elementCommand.Parameters.AddWithValue("@Titre", "Note");
-                        elementCommand.ExecuteNonQuery();
                     }
 
                     MessageBox.Show("Note ajoutée avec succès !");

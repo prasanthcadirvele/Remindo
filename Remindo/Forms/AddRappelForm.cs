@@ -42,24 +42,27 @@ namespace Remindo.Forms
                     // Open connection
                     connection.Open();
 
-                    // Insert into Rappel table
-                    string query = "INSERT INTO Rappel (utilisateurId, titre, description, dateRappel) VALUES (@UtilisateurId, @Titre, @Description, @DateRappel)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    // Insert into Element table to get elementId
+                    string elementQuery = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre); SELECT LAST_INSERT_ID();";
+                    int elementId;
+                    using (MySqlCommand elementCommand = new MySqlCommand(elementQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        command.Parameters.AddWithValue("@Titre", titre);
-                        command.Parameters.AddWithValue("@Description", description);
-                        command.Parameters.AddWithValue("@DateRappel", dateRappel);
-                        command.ExecuteNonQuery();
+                        elementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        elementCommand.Parameters.AddWithValue("@Titre", "Rappel"); // Specify the titre for Rappel
+                        elementId = Convert.ToInt32(elementCommand.ExecuteScalar());
                     }
 
-                    // Insert into Element table
-                    query = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    // Insert into Rappel table with the obtained elementId
+                    string rappelQuery = "INSERT INTO Rappel (elementId, utilisateurId, titre, description, dateRappel) " +
+                                         "VALUES (@ElementId, @UtilisateurId, @Titre, @Description, @DateRappel)";
+                    using (MySqlCommand rappelCommand = new MySqlCommand(rappelQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        command.Parameters.AddWithValue("@Titre", "Rappel");
-                        command.ExecuteNonQuery();
+                        rappelCommand.Parameters.AddWithValue("@ElementId", elementId); // Use the obtained elementId
+                        rappelCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        rappelCommand.Parameters.AddWithValue("@Titre", titre);
+                        rappelCommand.Parameters.AddWithValue("@Description", description);
+                        rappelCommand.Parameters.AddWithValue("@DateRappel", dateRappel);
+                        rappelCommand.ExecuteNonQuery();
                     }
 
                     MessageBox.Show("Rappel ajouté avec succès !");
@@ -70,6 +73,7 @@ namespace Remindo.Forms
                 MessageBox.Show("Erreur: " + ex.Message);
             }
         }
+
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {

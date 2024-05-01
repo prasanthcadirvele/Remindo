@@ -54,27 +54,29 @@ namespace Remindo.Forms
                     // Open connection
                     connection.Open();
 
-                    // Insert into Tache table
-                    string query = "INSERT INTO Tache (utilisateurId, titre, description, dateCreation, DateRealisation, statut) " +
-                                   "VALUES (@UtilisateurId, @Titre, @Description, @DateCreation, @DateRealisation, @Statut)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    // Insert into Element table to get elementId
+                    string elementQuery = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre); SELECT LAST_INSERT_ID();";
+                    int elementId;
+                    using (MySqlCommand elementCommand = new MySqlCommand(elementQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        command.Parameters.AddWithValue("@Titre", titre);
-                        command.Parameters.AddWithValue("@Description", description);
-                        command.Parameters.AddWithValue("@DateCreation", dateCreation);
-                        command.Parameters.AddWithValue("@DateRealisation", dateRealisation);
-                        command.Parameters.AddWithValue("@Statut", statut);
-                        command.ExecuteNonQuery();
+                        elementCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        elementCommand.Parameters.AddWithValue("@Titre", "Tache"); // Specify the titre for Tache
+                        elementId = Convert.ToInt32(elementCommand.ExecuteScalar());
                     }
 
-                    // Insert into Element table
-                    query = "INSERT INTO Element (utilisateurId, titre) VALUES (@UtilisateurId, @Titre)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    // Insert into Tache table with the obtained elementId
+                    string tacheQuery = "INSERT INTO Tache (elementId, utilisateurId, titre, description, dateCreation, DateRealisation, statut) " +
+                                        "VALUES (@ElementId, @UtilisateurId, @Titre, @Description, @DateCreation, @DateRealisation, @Statut)";
+                    using (MySqlCommand tacheCommand = new MySqlCommand(tacheQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
-                        command.Parameters.AddWithValue("@Titre", "Tache");
-                        command.ExecuteNonQuery();
+                        tacheCommand.Parameters.AddWithValue("@ElementId", elementId); // Use the obtained elementId
+                        tacheCommand.Parameters.AddWithValue("@UtilisateurId", utilisateurId); // Add utilisateurId parameter
+                        tacheCommand.Parameters.AddWithValue("@Titre", titre);
+                        tacheCommand.Parameters.AddWithValue("@Description", description);
+                        tacheCommand.Parameters.AddWithValue("@DateCreation", dateCreation);
+                        tacheCommand.Parameters.AddWithValue("@DateRealisation", dateRealisation);
+                        tacheCommand.Parameters.AddWithValue("@Statut", statut);
+                        tacheCommand.ExecuteNonQuery();
                     }
 
                     MessageBox.Show("Tache ajoutée avec succès !");
@@ -85,6 +87,7 @@ namespace Remindo.Forms
                 MessageBox.Show("Erreur: " + ex.Message);
             }
         }
+
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
