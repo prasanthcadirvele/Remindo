@@ -144,6 +144,30 @@
     <Compile Include="Forms\AddTacheForm.Designer.cs">
       <DependentUpon>AddTacheForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ViewEvenementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ViewEvenementForm.Designer.cs">
+      <DependentUpon>ViewEvenementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ViewNoteForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ViewNoteForm.Designer.cs">
+      <DependentUpon>ViewNoteForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ViewRappelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ViewRappelForm.Designer.cs">
+      <DependentUpon>ViewRappelForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ViewTacheForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ViewTacheForm.Designer.cs">
+      <DependentUpon>ViewTacheForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\UserManager.cs" />
@@ -167,6 +191,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Home.resx">
       <DependentUpon>Home.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewEvenementForm.resx">
+      <DependentUpon>ViewEvenementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewNoteForm.resx">
+      <DependentUpon>ViewNoteForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewRappelForm.resx">
+      <DependentUpon>ViewRappelForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewTacheForm.resx">
+      <DependentUpon>ViewTacheForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

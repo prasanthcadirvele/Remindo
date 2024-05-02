@@ -105,48 +105,42 @@ namespace Remindo.Forms
                     connection.Open();
 
                     // Determine the type of element based on the row data
-                    string query = "SELECT type FROM Element WHERE elementId = @ElementId";
+                    string query = "SELECT titre FROM Element WHERE elementId = @ElementId";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@ElementId", elementId);
-                        string elementType = command.ExecuteScalar().ToString();
+                        string elementTitre = command.ExecuteScalar()?.ToString(); // Use null-conditional operator
 
-                        // Open the corresponding AddForm
-                        Form addForm = null;
-                        switch (elementType)
+                        // Check if elementTitre is null
+                        if (elementTitre == null)
+                        {
+                            MessageBox.Show("Unknown element type.");
+                            return;
+                        }
+
+                        // Open the corresponding View Form
+                        Form viewForm = null;
+                        switch (elementTitre)
                         {
                             case "Evenement":
-                                addForm = new AddEvenementForm(elementId);
+                                viewForm = new ViewEvenementForm(elementId);
                                 break;
                             case "Note":
-                                addForm = new AddNoteForm(elementId);
+                                viewForm = new ViewNoteForm(elementId);
                                 break;
                             case "Rappel":
-                                addForm = new AddRappelForm(elementId);
+                                viewForm = new ViewRappelForm(elementId);
                                 break;
                             case "Tache":
-                                addForm = new AddTacheForm(elementId);
+                                viewForm = new ViewTacheForm(elementId);
                                 break;
                             default:
                                 MessageBox.Show("Unknown element type.");
                                 return;
                         }
 
-                        // Pass the element ID to the AddForm
-                        addForm.Tag = elementId;
-
-                        // Disable editing in the AddForm
-                        foreach (Control control in addForm.Controls)
-                        {
-                            if (control is TextBox)
-                            {
-                                ((TextBox)control).ReadOnly = true;
-                            }
-                            // Add similar handling for other controls like DateTimePicker, ComboBox, etc.
-                        }
-
-                        // Show the AddForm
-                        addForm.ShowDialog();
+                        // Show the View Form
+                        viewForm.ShowDialog();
                     }
                 }
             }
@@ -165,14 +159,14 @@ namespace Remindo.Forms
                     connection.Open();
 
                     // Determine the type of element based on the row data
-                    string query = "SELECT type FROM Element WHERE elementId = @ElementId";
+                    string query = "SELECT titre FROM Element WHERE elementId = @ElementId";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@ElementId", elementId);
-                        string elementType = command.ExecuteScalar().ToString();
+                        string elementTitre = command.ExecuteScalar().ToString();
 
                         // Delete the record from the appropriate table based on the element type
-                        switch (elementType)
+                        switch (elementTitre)
                         {
                             case "Evenement":
                                 DeleteFromEvenementTable(elementId, connection);
